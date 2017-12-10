@@ -7,6 +7,11 @@
     <title>Tetris</title>
 
     <style type="text/css">
+		body{
+			background-image: url("https://static1.squarespace.com/static/51be3e56e4b09edc5f81e74c/t/54ab723fe4b01142027aaba0/1420522056098/");
+			text-align:center; 
+			color: white;
+		}
 
     </style>
 
@@ -18,7 +23,7 @@
     <canvas id="canvasOne" width="240" height="400"></canvas>
 
     <script type="text/javascript">
-		//adapted from https://www.youtube.com/watch?v=H2aW5V46khA
+		//link to tutorial https://www.youtube.com/watch?v=H2aW5V46khA
 		// Gets a handle to the element with id canvasOne.
 		var canvas = document.getElementById("canvasOne");
 		// Set the canvas up for drawing in 2D.
@@ -27,10 +32,11 @@
 		//this makes everything inside the canvas bigger 20 times
 		context.scale(20,20);
 		
-		//context.fillStyle = "rgb(255, 0, 0)";
-		//context.fillRect(0,0,240,400);
-		//context.fill();
+		//updates the scores 
+		function updateScore(){
+			document.getElementById('score').innerText = player.score;
 		
+		}
 		//these are the different shapes for the matrix
 		function createPiece(type){
 			if (type === 'I') {
@@ -78,6 +84,7 @@
 			}
 		}
 		
+		//clears when you get a perfect line
 		function arenaSweep() {
 			
 			let rowCount = 1;
@@ -92,12 +99,13 @@
 				const row = cm.splice(y, 1)[0].fill(0);
 				cm.unshift(row);
 				++y;
-				
+				//this adds score to the player when it clears 
 				player.score += rowCount * 10;
 				rowCount *= 2;
 			}
 		}
 		
+		//different colours for the shapes
 		const color = [
 			
 			null,
@@ -132,8 +140,7 @@
 			
 			const matrix = [];
 			
-			while(height--){
-			
+			while(height--){	
 				matrix.push(new Array(width).fill(0));
 			}
 		
@@ -172,8 +179,9 @@
 		//add a player structure 
 		const player = {
 			
-			pos:{x:5,y:5},
-			matrix: createPiece('T'),
+			pos:{x:0,y:0},
+			matrix: null,
+			score: 0,
 		
 		}
 		
@@ -289,6 +297,7 @@
 				merge(cm,player);
 				playerReset();
 				arenaSweep();
+				updateScore();
 				
 			}
 			dropCounter =0;
@@ -313,7 +322,9 @@
 			}
 		
 		});
-		//call the function
+		//call the functions
+		playerReset();
+		updateScore();
 		move();
 		
 
