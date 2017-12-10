@@ -65,6 +65,20 @@
 		
 		}
 		
+		//this saves the pieces in the arrays tables 
+		function merge(cm,player){
+			
+			player.matrix.forEach((row, y) =>{
+				
+				row.forEach((value, x) =>{
+					if (value !== 0) {
+						cm[y + player.pos.y][x + player.pos.x] = value;
+					}			
+				});
+			
+			});	
+		}
+		
 		//add a player structure 
 		const player = {
 			
