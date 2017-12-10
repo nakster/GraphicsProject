@@ -37,6 +37,23 @@
 		
 		];
 		
+		//for collision detection		
+		function collide(cm, player) {
+			const m = player.matrix;
+			const o = player.pos;
+			for (let y = 0; y < m.length; ++y) {
+				for (let x = 0; x < m[y].length; ++x) {
+					if (m[y][x] !== 0 &&
+					   (cm[y + o.y] &&
+						cm[y + o.y][x + o.x]) !== 0) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		
 		//this make new matrixs 
 		function createMatrix(width,height){
 			
@@ -97,6 +114,9 @@
 			//context.clearRect(0, 0, canvas.width, canvas.height);
 			context.fillStyle = '#000';
 			context.fillRect(0,0,canvas.width,canvas.height);
+			
+			//
+			drawMatrix(cm, {x: 0, y: 0});
 			//call the function
 			drawMatrix(player.matrix,player.pos);
 		
@@ -127,6 +147,11 @@
 		//this moves the piece by 1 downwards
 		function playerDrop(){
 			player.pos.y++;
+			if(collide(cm, player)){
+				player.pos.y--;
+				merge(cm,player);
+				player.pos.y =0;
+			}
 			dropCounter =0;
 		}
 		
