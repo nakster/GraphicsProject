@@ -209,6 +209,10 @@
 			//put the player in the middle
 			player.pos.x = (cm[0].length / 2 | 0) -
 						   (player.matrix[0].length / 2 | 0);
+			
+			if (collide(cm, player)) {
+				cm.forEach(row => row.fill(0));
+			}
 		}
 
 		//this moves players left right
