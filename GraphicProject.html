@@ -17,6 +17,7 @@
     <canvas id="canvasOne" width="240" height="400"></canvas>
 
     <script type="text/javascript">
+		//adapted from https://www.youtube.com/watch?v=H2aW5V46khA
 		// Gets a handle to the element with id canvasOne.
 		var canvas = document.getElementById("canvasOne");
 		// Set the canvas up for drawing in 2D.
@@ -29,14 +30,52 @@
 		//context.fillRect(0,0,240,400);
 		//context.fill();
 		
-		const matrix = [
-		
-			[0,0,0],
-			[1,1,1],
-			[0,1,0],
-		
-		];
-		
+		//these are the different shapes for the matrix
+		function createPiece(type){
+			if (type === 'I') {
+				return [
+					[0, 1, 0, 0],
+					[0, 1, 0, 0],
+					[0, 1, 0, 0],
+					[0, 1, 0, 0],
+				];
+			} else if (type === 'L') {
+				return [
+					[0, 1, 0],
+					[0, 1, 0],
+					[0, 1, 1],
+				];
+			} else if (type === 'J') {
+				return [
+					[0, 1, 0],
+					[0, 1, 0],
+					[1, 1, 0],
+				];
+			} else if (type === 'O') {
+				return [
+					[1, 1],
+					[1, 1],
+				];
+			} else if (type === 'Z') {
+				return [
+					[1, 1, 0],
+					[0, 1, 1],
+					[0, 0, 0],
+				];
+			} else if (type === 'S') {
+				return [
+					[0, 1, 1],
+					[1, 1, 0],
+					[0, 0, 0],
+				];
+			} else if (type === 'T') {
+				return [
+					[0, 1, 0],
+					[1, 1, 1],
+					[0, 0, 0],
+				];
+			}
+		}
 		//for collision detection		
 		function collide(cm, player) {
 			const m = player.matrix;
@@ -100,7 +139,7 @@
 		const player = {
 			
 			pos:{x:5,y:5},
-			matrix: matrix,
+			matrix: createPiece('T'),
 		
 		}
 		
@@ -122,6 +161,57 @@
 		
 		}
 		
+		//this rotates the pieces 
+		function rotate(matrix, dir) {
+			for (let y = 0; y < matrix.length; ++y) {
+				//switch the matrix
+				for (let x = 0; x < y; ++x) {
+					[
+						matrix[x][y],
+						matrix[y][x],
+					] = [
+						matrix[y][x],
+						matrix[x][y],
+					];
+				}
+			}
+			//check the direction
+			if (dir > 0) {
+				matrix.forEach(row => row.reverse());
+			} else {
+				matrix.reverse();
+			}
+		}
+		
+		//this function rotates the pieces and stops it from rotating it inside the wall
+		function playerRotate(dir) {
+			const pos = player.pos.x;
+			let offset = 1;
+			//call the function rotate
+			rotate(player.matrix, dir);
+			//this so it does not rotate inside the wall 
+			while (collide(cm, player)) {
+				player.pos.x += offset;
+				offset = -(offset + (offset > 0 ? 1 : -1));
+				if (offset > player.matrix[0].length) {
+					rotate(player.matrix, -dir);
+					player.pos.x = pos;
+					return;
+				}
+			}
+		}
+		
+		//resets player
+		function playerReset() {
+			const pieces = 'JLOTSZI';
+			player.matrix = createPiece(pieces[pieces.length * Math.random() | 0]);
+			player.pos.y = 0;
+			//put the player in the middle
+			player.pos.x = (cm[0].length / 2 | 0) -
+						   (player.matrix[0].length / 2 | 0);
+		}
+
+		//this moves players left right
 		function playerMove(offset) {
 			
 			 player.pos.x += offset;
@@ -157,7 +247,7 @@
 			if(collide(cm, player)){
 				player.pos.y--;
 				merge(cm,player);
-				player.pos.y =0;
+				playerReset();
 			}
 			dropCounter =0;
 		}
@@ -171,7 +261,13 @@
 				 playerMove(1);
 			}
 			else if (event.keyCode === 40) {//down
-			  playerDrop();
+				playerDrop();
+			}
+			else if (event.keyCode === 81) {
+				playerRotate(-1);
+			} 
+			else if (event.keyCode === 87) {
+				playerRotate(1);
 			}
 		
 		});
