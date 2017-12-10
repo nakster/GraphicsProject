@@ -12,6 +12,13 @@
 			text-align:center; 
 			color: white;
 		}
+		ul{
+		
+			background-color: white;
+			color:black;
+			text-align:center;
+		
+		}
 
     </style>
 
@@ -21,6 +28,17 @@
 	
 	<div id="score"></div>
     <canvas id="canvasOne" width="240" height="400"></canvas>
+	<h1>Instructions</h1>
+
+	<table style="width:100%">
+	  <tr>
+		<td>Left Arrow to Move Left</td>
+		<td>Right Arrow to Move Right</td>
+		<td>Down Arrow to go Faster</td>
+		<td>Q or W TO Rotate The Shape</td>
+	  </tr>
+	</table> 
+		 
 
     <script type="text/javascript">
 		//link to tutorial https://www.youtube.com/watch?v=H2aW5V46khA
@@ -34,9 +52,9 @@
 		
 		//updates the scores 
 		function updateScore(){
-			document.getElementById('score').innerText = player.score;
+			document.getElementById('score').innerText = "Score: " + player.score;
 		
-		}
+		}	
 		//these are the different shapes for the matrix
 		function createPiece(type){
 			if (type === 'I') {
@@ -330,6 +348,8 @@
 
 		
     </script>
+	
+	
 
   </body>
 
