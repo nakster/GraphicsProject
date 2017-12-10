@@ -13,7 +13,8 @@
   </head>
 
   <body>
-
+	
+	<div id="score"></div>
     <canvas id="canvasOne" width="240" height="400"></canvas>
 
     <script type="text/javascript">
@@ -41,41 +42,74 @@
 				];
 			} else if (type === 'L') {
 				return [
-					[0, 1, 0],
-					[0, 1, 0],
-					[0, 1, 1],
+					[0, 2, 0],
+					[0, 2, 0],
+					[0, 2, 2],
 				];
 			} else if (type === 'J') {
 				return [
-					[0, 1, 0],
-					[0, 1, 0],
-					[1, 1, 0],
+					[0, 3, 0],
+					[0, 3, 0],
+					[3, 3, 0],
 				];
 			} else if (type === 'O') {
 				return [
-					[1, 1],
-					[1, 1],
+					[4, 4],
+					[4, 4],
 				];
 			} else if (type === 'Z') {
 				return [
-					[1, 1, 0],
-					[0, 1, 1],
+					[5, 5, 0],
+					[0, 5, 5],
 					[0, 0, 0],
 				];
 			} else if (type === 'S') {
 				return [
-					[0, 1, 1],
-					[1, 1, 0],
+					[0, 6, 6],
+					[6, 6, 0],
 					[0, 0, 0],
 				];
 			} else if (type === 'T') {
 				return [
-					[0, 1, 0],
-					[1, 1, 1],
+					[0, 7, 0],
+					[7, 7, 7],
 					[0, 0, 0],
 				];
 			}
 		}
+		
+		function arenaSweep() {
+			
+			let rowCount = 1;
+			outer: for (let y = cm.length -1; y > 0; --y) {
+				for (let x = 0; x < cm[y].length; ++x) {
+					//check if not populated
+					if (cm[y][x] === 0) {
+						continue outer;
+					}
+				}
+
+				const row = cm.splice(y, 1)[0].fill(0);
+				cm.unshift(row);
+				++y;
+				
+				player.score += rowCount * 10;
+				rowCount *= 2;
+			}
+		}
+		
+		const color = [
+			
+			null,
+			'red',
+			'green',
+			'blue',
+			'pink',
+			'purple',
+			'orange',
+			'yellow',
+		
+		]
 		//for collision detection		
 		function collide(cm, player) {
 			const m = player.matrix;
@@ -113,7 +147,7 @@
 			matrix.forEach((row, y) => {
 				row.forEach((value, x) => {
 					if (value !== 0) {
-						context.fillStyle = 'red';
+						context.fillStyle =color[value];
 						context.fillRect(x + offset.x, y + offset.y, 1, 1);
 					}
 				});
@@ -209,9 +243,11 @@
 			//put the player in the middle
 			player.pos.x = (cm[0].length / 2 | 0) -
 						   (player.matrix[0].length / 2 | 0);
-			
+			//this clears the canvas
 			if (collide(cm, player)) {
 				cm.forEach(row => row.fill(0));
+				player.score = 0;
+				updateScore();
 			}
 		}
 
@@ -252,6 +288,8 @@
 				player.pos.y--;
 				merge(cm,player);
 				playerReset();
+				arenaSweep();
+				
 			}
 			dropCounter =0;
 		}
