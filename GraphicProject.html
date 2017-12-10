@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Tetris</title>
+
+    <style type="text/css">
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <canvas id="canvasOne" width="240" height="400"></canvas>
+
+    <script type="text/javascript">
+		// Gets a handle to the element with id canvasOne.
+		var canvas = document.getElementById("canvasOne");
+		// Set the canvas up for drawing in 2D.
+		var context = canvas.getContext("2d");
+		
+		//this makes everything inside the canvas bigger 20 times
+		context.scale(20,20);
+		
+		//context.fillStyle = "rgb(255, 0, 0)";
+		//context.fillRect(0,0,240,400);
+		//context.fill();
+		
+		const matrix = [
+		
+			[0,0,0],
+			[1,1,1],
+			[0,1,0],
+		
+		];
+		
+		//this make new matrixs 
+		function createMatrix(width,height){
+			
+			const matrix = [];
+			
+			while(height--){
+			
+				matrix.push(new Array(width).fill(0));
+			}
+		
+			return matrix;
+		}
+		
+		//this makes the rectangle for the tetris
+		//offset means the piece will be able to move 
+		function drawMatrix(matrix, offset){
+		
+			matrix.forEach((row, y) => {
+				row.forEach((value, x) => {
+					if (value !== 0) {
+						context.fillStyle = 'red';
+						context.fillRect(x + offset.x, y + offset.y, 1, 1);
+					}
+				});
+			});
+		
+		}
+		
+		//add a player structure 
+		const player = {
+			
+			pos:{x:5,y:5},
+			matrix: matrix,
+		
+		}
+		
+		//creates 20 arrays with 0s
+		const cm = createMatrix(12,20);
+		
+		
+		//this function calls the draw matrix function
+		function draw(){
+			//context.fillStyle = '#000';
+			//context.clearRect(0, 0, canvas.width, canvas.height);
+			context.fillStyle = '#000';
+			context.fillRect(0,0,canvas.width,canvas.height);
+			//call the function
+			drawMatrix(player.matrix,player.pos);
+		
+		}
+		
+		//variables that allow to move the piece 
+		let dropCounter =0;
+		let dropInterval =  1000;
+		let lastTime = 0;
+		
+		//this function keeps the piece moving 
+		function move(time= 0){
+			//gets the difference
+			const deltaTime = time - lastTime;
+			lastTime = time;
+			
+			//this adds the difference 
+			dropCounter += deltaTime;
+			//if the difference adds up to 1000 or more it move the pos of the 
+			//piece by 1
+			if(dropCounter > dropInterval){
+				playerDrop();
+			}
+			draw();
+			requestAnimationFrame(move);
+		}
+		
+		//this moves the piece by 1 downwards
+		function playerDrop(){
+			player.pos.y++;
+			dropCounter =0;
+		}
+		
+		//this moves the pieces with keys 
+		document.addEventListener('keydown', event => {
+			if (event.keyCode === 37) {//left
+				player.pos.x--;
+			}
+			else if (event.keyCode === 39) {//right
+			  player.pos.x++;
+			}
+			else if (event.keyCode === 40) {//down
+			  playerDrop();
+			}
+		
+		});
+		//call the function
+		move();
+		
+
+		
+    </script>
+
+  </body>
+
+</html>
